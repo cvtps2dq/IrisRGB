@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import jssc.SerialPortException;
 import ru.teamentropy.irisrgb.dataflow.DataFlow;
 import ru.teamentropy.irisrgb.dataflow.DataFlowImpl;
 
@@ -21,11 +20,20 @@ public class MainWindow extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) throws SerialPortException {
+    public static void main(String[] args) throws InterruptedException {
         DataFlow dataFlow = new DataFlowImpl();
 
         //System.out.println(Arrays.toString(dataFlow.getPorts()));
-        dataFlow.connect("COM6", 115200, 8, 0, 0);
-        launch();
+        Thread thread = new Thread(){
+            public void run(){
+                try {
+                    dataFlow.connect("COM6", 115200, 8, 0, 0);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        thread.start();
+        //launch();
     }
 }

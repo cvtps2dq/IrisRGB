@@ -1,15 +1,15 @@
 package ru.teamentropy.irisrgb.dataflow;
 
 import javafx.scene.paint.Color;
-import jssc.*;
+import com.fazecast.jSerialComm.SerialPort;
+import java.util.Arrays;
 
 
 public class DataFlowImpl implements DataFlow{
-
-    private String port;
+    //private SerialPort port;
 
     public String[] getPorts(){
-        return SerialPortList.getPortNames();
+        return new String[]{Arrays.toString(SerialPort.getCommPorts())};
     }
 
     @Override
@@ -18,10 +18,22 @@ public class DataFlowImpl implements DataFlow{
     }
 
     @Override
-    public void connect(String addr, int baudrate, int databits, int stopBits, int parity) throws SerialPortException {
-        SerialPort port = new SerialPort(addr);
+    public void connect(String addr, int baudRate, int dataBits, int stopBits, int parity) throws InterruptedException {
+        SerialPort port = SerialPort.getCommPort(addr);
+        //Random random = new Random();
         port.openPort();
-        port.setParams(baudrate, databits, stopBits, parity);
-        port.writeString("255 0 255 ");
+        port.setComPortParameters(baudRate,dataBits, stopBits, parity);
+        byte[] bytes;
+        for(int i = 0; i < 255; i+=10){
+            bytes = (i + " " + i + " " + i + " ").getBytes();
+            port.writeBytes(bytes, bytes.length);
+            Thread.sleep(64);
+            System.out.println(i);
+            if(i > 249){
+                i = 0;
+            }
+        }
+
     }
+
 }
