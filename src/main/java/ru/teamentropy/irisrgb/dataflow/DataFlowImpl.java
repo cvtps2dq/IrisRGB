@@ -77,6 +77,44 @@ public class DataFlowImpl{
             }
     }
 
+    public void pulse(int delay, double acc, int interval, DataFlowRGB color) throws InterruptedException{
+        transition(color, new DataFlowRGB(0,0,0), delay, acc);
+        try{
+            Thread.sleep(interval);
+        } catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+        transition(new DataFlowRGB(0,0,0), color, delay, acc);
+        try{
+            Thread.sleep(interval);
+        } catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+    }
+    public void setColor(DataFlowRGB color){
+        byte[] bytes;
+        bytes = color.toBytes();
+        port.writeBytes(bytes, bytes.length);
+    }
+
+    public void strobe (DataFlowRGB color, int delay){
+        byte[] bytes;
+        bytes = color.toBytes();
+        port.writeBytes(bytes, bytes.length);
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        bytes = new DataFlowRGB(0,0,0).toBytes();
+        port.writeBytes(bytes, bytes.length);
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void transition(DataFlowRGB startColor, DataFlowRGB endColor, int delay, double acc) throws InterruptedException {
         //port.openPort();
         byte[] bytes;
@@ -95,7 +133,6 @@ public class DataFlowImpl{
                 ex.printStackTrace();
             }
         }
-        System.out.println("Done.");
 
     }
 

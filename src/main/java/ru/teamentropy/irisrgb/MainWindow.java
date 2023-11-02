@@ -45,11 +45,13 @@ public class MainWindow extends Application {
                 while (true) {
 
                     DataFlowRGB end = new DataFlowRGB(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1));
-                    //dataFlow.transition(start, end, 15, 0.05);
-                    start = end;
+                    //dataFlow.transition(start, end, 15, 0.005);
+                    //start = end;
+                    //dataFlow.pulse(64, 0.05, 1000, new DataFlowRGB(255, 0, 255));
                     //dataFlow.audioCapture();
                     //dataFlow.setColor(new Color(0.0, 0.0, 0.0, 0.0));
-                    dataFlow.colorWheel(32, 0.05D);
+                    //dataFlow.colorWheel(32, 0.05D);
+                    //dataFlow.strobe(new DataFlowRGB(255, 255, 255), 100);
 
                 }
             } catch (InterruptedException ex) {
