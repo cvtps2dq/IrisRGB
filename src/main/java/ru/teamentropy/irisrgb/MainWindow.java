@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import ru.teamentropy.irisrgb.dataflow.DataFlowImpl;
+import ru.teamentropy.irisrgb.dataflow.color.DataFlowRGB;
 
 
 import java.io.IOException;
@@ -34,18 +35,25 @@ public class MainWindow extends Application {
         DataFlowImpl dataFlow = new DataFlowImpl(SerialPort.getCommPorts()[0],
                 baudRate, dataBits, stopBits, parity);
 
+
         Thread thread = new Thread(() -> {
             try {
 
                 dataFlow.connectAlt();
+                //audioEngine.getData();
+                DataFlowRGB start = new DataFlowRGB(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1));
                 while (true) {
-                    Color start = new Color(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1), 1.0);
-                    Color end = new Color(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1), 1.0);
+
+                    DataFlowRGB end = new DataFlowRGB(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1));
                     //dataFlow.transition(start, end, 15, 0.05);
-                    dataFlow.setColor(new Color(0.0, 0.0, 0.0, 0.0));
+                    start = end;
+                    //dataFlow.audioCapture();
+                    //dataFlow.setColor(new Color(0.0, 0.0, 0.0, 0.0));
+                    dataFlow.colorWheel(32, 0.05D);
+
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
             }
         });
         thread.start();

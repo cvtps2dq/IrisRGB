@@ -1,10 +1,9 @@
 package ru.teamentropy.irisrgb.dataflow;
 
-import javafx.scene.paint.Color;
 import com.fazecast.jSerialComm.SerialPort;
+import ru.teamentropy.irisrgb.dataflow.color.DataFlowRGB;
 
 import java.util.Arrays;
-
 
 
 public class DataFlowImpl{
@@ -66,56 +65,26 @@ public class DataFlowImpl{
         return new String[]{Arrays.toString(SerialPort.getCommPorts())};
     }
 
-    public void setColor(Color color) throws InterruptedException {
-        port.flushIOBuffers();
-        byte[] bytes;
-        bytes = createDFColor(color).getBytes();
-        port.writeBytes(bytes, bytes.length);
-        //System.out.println("Trying to upload color: " + createDFColor(temp) + ".");
-        while (port.bytesAwaitingWrite() > 0){
-            Thread.sleep(20);
-        }
-    }
-
-    private javafx.scene.paint.Color awt2fx(java.awt.Color awtColor){
-        int r = awtColor.getRed();
-        int g = awtColor.getGreen();
-        int b = awtColor.getBlue();
-        int a = awtColor.getAlpha();
-        double opacity = a / 255.0 ;
-        return javafx.scene.paint.Color.rgb(r, g, b, opacity);
-    }
-
-    private String createDFColor(Color color){
-        return ( (int)(color.getRed() * 255) + " " + (int)(color.getGreen() * 255) + " " +
-                (int)(color.getBlue() * 255) + " ");
-    }
-
-    public void colorWheel(int delay) throws InterruptedException{
-        byte[] bytes;
-        for (int i = 1; i < 255; i++) {
+    public void colorWheel(int delay, double acc) throws InterruptedException{
            // port.flushIOBuffers();
-            Color temp = awt2fx(new java.awt.Color(java.awt.Color.HSBtoRGB(255, 255, i)));
-            bytes = createDFColor(temp).getBytes();
-            port.writeBytes(bytes, bytes.length);
-
-            try {
+            transition(new DataFlowRGB(255, 0, 0), new DataFlowRGB(0, 255, 0), delay, acc);
+            transition(new DataFlowRGB(0, 255, 0), new DataFlowRGB(0, 0, 255), delay, acc);
+            transition(new DataFlowRGB(0, 0, 255), new DataFlowRGB(255, 0, 0), delay, acc);
+            try{
                 Thread.sleep(delay);
-            } catch (InterruptedException ex) {
+            }catch (InterruptedException ex){
                 ex.printStackTrace();
             }
-        }
-        System.out.println("Done.");
     }
-    public int transition(Color startColor, Color endColor, int delay, double acc) throws InterruptedException {
+
+    public void transition(DataFlowRGB startColor, DataFlowRGB endColor, int delay, double acc) throws InterruptedException {
         //port.openPort();
         byte[] bytes;
         for (double i = 0; i < 1; i += acc) {
             port.flushIOBuffers();
-            Color temp = startColor.interpolate(endColor, i);
-            bytes = createDFColor(temp).getBytes();
+            DataFlowRGB color = startColor.interpolate(endColor, i);
+            bytes = color.toBytes();
             port.writeBytes(bytes, bytes.length);
-            //System.out.println("Trying to upload color: " + createDFColor(temp) + ".");
             while (port.bytesAwaitingWrite() > 0){
                 Thread.sleep(20);
             }
@@ -128,7 +97,6 @@ public class DataFlowImpl{
         }
         System.out.println("Done.");
 
-        return 1;
     }
 
     public void connectAlt() throws InterruptedException {
