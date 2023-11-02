@@ -1,13 +1,16 @@
 package ru.teamentropy.irisrgb;
 
+import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import ru.teamentropy.irisrgb.dataflow.DataFlow;
 import ru.teamentropy.irisrgb.dataflow.DataFlowImpl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class MainWindow extends Application {
@@ -20,17 +23,29 @@ public class MainWindow extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        DataFlow dataFlow = new DataFlowImpl();
+    public static void main(String[] args) throws InterruptedException, IOException {
+        int baudRate = 115200;
+        int dataBits = 8;
+        int stopBits = 0;
+        int parity = 0;
+        Color start = Color.MAGENTA;
+        Color end = Color.FORESTGREEN;
+        System.out.println(Arrays.toString(SerialPort.getCommPorts()));
+
+        DataFlowImpl dataFlow = new DataFlowImpl(SerialPort.getCommPorts()[0],
+                baudRate, dataBits, stopBits, parity);
+
+
 
         //System.out.println(Arrays.toString(dataFlow.getPorts()));
         Thread thread = new Thread(){
             public void run(){
                 try {
-                    dataFlow.connect("COM6", 115200, 8, 0, 0);
+                    dataFlow.connectAlt();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                dataFlow.transition(start, end, 64, 1000, 0.005D);
             }
         };
         thread.start();
