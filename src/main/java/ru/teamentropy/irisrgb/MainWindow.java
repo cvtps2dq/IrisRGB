@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import ru.teamentropy.irisrgb.dataflow.ColorUtils;
 import ru.teamentropy.irisrgb.dataflow.DataFlowImpl;
 
 
@@ -29,7 +28,6 @@ public class MainWindow extends Application {
         int dataBits = 8;
         int stopBits = 0;
         int parity = 0;
-        ColorUtils colorUtils = new ColorUtils();
         Random rand = new Random();
         System.out.println(Arrays.toString(SerialPort.getCommPorts()));
 
@@ -38,13 +36,13 @@ public class MainWindow extends Application {
 
         Thread thread = new Thread(() -> {
             try {
+
                 dataFlow.connectAlt();
                 while (true) {
-                    //Color start = colorUtils.createRandomHSV();
-                    //Color end = colorUtils.createRandomHSV();
-                    //System.out.println(end.toString());
-                    //dataFlow.transition(start, end, 64, 0.05D);
-                    dataFlow.colorWheel(32);
+                    Color start = new Color(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1), 1.0);
+                    Color end = new Color(rand.nextDouble(1), rand.nextDouble(1), rand.nextDouble(1), 1.0);
+                    //dataFlow.transition(start, end, 15, 0.05);
+                    dataFlow.setColor(new Color(0.0, 0.0, 0.0, 0.0));
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

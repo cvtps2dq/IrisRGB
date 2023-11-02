@@ -66,28 +66,38 @@ public class DataFlowImpl{
         return new String[]{Arrays.toString(SerialPort.getCommPorts())};
     }
 
-    public void setColor(Color color) {
+    public void setColor(Color color) throws InterruptedException {
+        port.flushIOBuffers();
+        byte[] bytes;
+        bytes = createDFColor(color).getBytes();
+        port.writeBytes(bytes, bytes.length);
+        //System.out.println("Trying to upload color: " + createDFColor(temp) + ".");
+        while (port.bytesAwaitingWrite() > 0){
+            Thread.sleep(20);
+        }
+    }
 
+    private javafx.scene.paint.Color awt2fx(java.awt.Color awtColor){
+        int r = awtColor.getRed();
+        int g = awtColor.getGreen();
+        int b = awtColor.getBlue();
+        int a = awtColor.getAlpha();
+        double opacity = a / 255.0 ;
+        return javafx.scene.paint.Color.rgb(r, g, b, opacity);
     }
 
     private String createDFColor(Color color){
-        return ( (int)(color.getBlue() * 255) + " " + (int)(color.getGreen() * 255) + " " +
+        return ( (int)(color.getRed() * 255) + " " + (int)(color.getGreen() * 255) + " " +
                 (int)(color.getBlue() * 255) + " ");
     }
 
     public void colorWheel(int delay) throws InterruptedException{
         byte[] bytes;
-        ColorUtils colorUtils = new ColorUtils();
         for (int i = 1; i < 255; i++) {
-            port.flushIOBuffers();
-            Color temp = colorUtils.createFixedHSV((double) i / 255);
+           // port.flushIOBuffers();
+            Color temp = awt2fx(new java.awt.Color(java.awt.Color.HSBtoRGB(255, 255, i)));
             bytes = createDFColor(temp).getBytes();
             port.writeBytes(bytes, bytes.length);
-
-            System.out.println("Trying to upload color: " + createDFColor(temp) + ".");
-            while (port.bytesAwaitingWrite() > 0){
-                Thread.sleep(20);
-            }
 
             try {
                 Thread.sleep(delay);
