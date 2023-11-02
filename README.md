@@ -17,10 +17,7 @@ IRIS RGB is a creative way to create immersion when working with sound.
 For example - IRIS will glow red, when you use too much audio compression.
 
 As cv2 said once:
-> Audio is a way to express your feelings,
-> Audio is art
-> Audio is hard work, 
-> And it's good to have assistance in process.
+> Audio is a way to express your feelings, audio is art, audio is hard work, and it's good to have assistance in process of creating it.
 
 TeamEntropy and contributors, 2023
 
